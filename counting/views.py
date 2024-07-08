@@ -303,3 +303,34 @@ def all_by_date(request: HttpRequest):
             "all": group_inputs.data,
         }
     })
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def get_statistics_by_date(request: HttpRequest):
+    today = datetime.today()
+    day = request.GET.get("day")
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+    group_inputs_obj = None
+    start = 8
+    end = 20
+    statistics = []
+    for i in range(start, end + 1):
+        if day and month and year:
+            group_inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i)
+        else:
+            group_inputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i)
+        statistics.append({
+            "x": i,
+            "y": group_inputs_obj.count()
+        })
+
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "statistics": statistics,
+        }
+    })

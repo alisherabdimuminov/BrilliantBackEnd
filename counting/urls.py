@@ -21,6 +21,9 @@ from .views import (
 
     # all get
     all_by_date,
+
+    # statistics
+    get_statistics_by_date,
 )
 
 
@@ -43,4 +46,6 @@ urlpatterns = [
     # all by date
     path("all/", all_by_date, name="all_by_date"),
 
+    # statistics
+    path("statistics/", get_statistics_by_date, name="statistics"),
 ]
