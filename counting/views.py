@@ -313,18 +313,26 @@ def get_statistics_by_date(request: HttpRequest):
     day = request.GET.get("day")
     month = request.GET.get("month")
     year = request.GET.get("year")
+    inputs_obj = None
+    outputs_obj = None
     group_inputs_obj = None
     start = 8
     end = 20
     statistics = []
     for i in range(start, end + 1):
         if day and month and year:
-            group_inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i)
+            inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="input")
+            group_inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="output")
+            outputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="group_input")
         else:
-            group_inputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i)
+            inputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i, type="input")
+            outputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i, type="output")
+            group_inputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i, type="group_input")
         statistics.append({
             "x": i,
-            "y": group_inputs_obj.count()
+            "y1": inputs_obj.count(),
+            "y2": group_inputs_obj.count(),
+            "y3": outputs_obj.count(),
         })
 
     return Response({
