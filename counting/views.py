@@ -331,8 +331,8 @@ def get_statistics_by_date(request: HttpRequest):
         statistics.append({
             "x": i,
             "y1": inputs_obj.count(),
-            "y2": group_inputs_obj.count(),
-            "y3": outputs_obj.count(),
+            "y2": outputs_obj.count(),
+            "y3": group_inputs_obj.count(),
         })
 
     return Response({
