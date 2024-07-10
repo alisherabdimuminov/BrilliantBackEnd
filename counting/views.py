@@ -322,8 +322,8 @@ def get_statistics_by_date(request: HttpRequest):
     for i in range(start, end + 1):
         if day and month and year:
             inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="input")
-            group_inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="output")
-            outputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="group_input")
+            outputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="output")
+            group_inputs_obj = Model.objects.filter(created__day=day, created__month=month, created__year=year, created__hour=i, type="group_input")
         else:
             inputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i, type="input")
             outputs_obj = Model.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, created__hour=i, type="output")
