@@ -89,7 +89,7 @@ USE_TZ = True
 
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/var/www/static/'
 # STATIC_ROOT = BASE_DIR / "static"
 
 MEDI_URL = 'media/'
