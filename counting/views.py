@@ -349,7 +349,15 @@ def get_statistics_by_date(request: HttpRequest):
 @authentication_classes(authentication_classes=[TokenAuthentication])
 @permission_classes(permission_classes=[IsAuthenticated])
 def get_faces(request: HttpRequest):
-    faces_obj = Face.objects.all()
+    today = datetime.today()
+    day = request.GET.get("day")
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+    faces_obj = None
+    if day and month and year:
+        faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year)
+    else:
+        faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year)
     faces = FaceModelSerializer(faces_obj, many=True)
     return Response({
         "status": "success",
@@ -427,8 +435,16 @@ def create_customer_face(request: HttpRequest):
 @authentication_classes(authentication_classes=[TokenAuthentication])
 @permission_classes(permission_classes=[IsAuthenticated])
 def filter_faces_by_worker(request: HttpRequest, pk: int):
+    today = datetime.today()
+    day = request.GET.get("day")
+    month = request.GET.get("month")
+    year = request.GET.get("year")
     worker = Worker.objects.get(pk=pk)
     faces_obj = Face.objects.filter(worker=worker)
+    if day and month and year:
+        faces_obj = Face.objects.filter(worker=worker, created__day=day, created__month=month, created__year=year)
+    else:
+        faces_obj = Face.objects.filter(worker=worker, created__day=today.day, created__month=today.month, created__year=today.year)
     faces = FaceModelSerializer(faces_obj, many=True)
     return Response({
         "status": "success",
