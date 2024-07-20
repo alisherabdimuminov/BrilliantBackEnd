@@ -353,11 +353,20 @@ def get_faces(request: HttpRequest):
     day = request.GET.get("day")
     month = request.GET.get("month")
     year = request.GET.get("year")
+    worker = request.GET.get("worker")
     faces_obj = None
     if day and month and year:
-        faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year)
+        if worker:
+            worker = Worker.objects.get(pk=worker)
+            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year, worker=worker)
+        else:
+            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year)
     else:
-        faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year)
+        if worker:
+            worker = Worker.objects.get(pk=worker)
+            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, worker=worker)
+        else:
+            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year)
     faces = FaceModelSerializer(faces_obj, many=True)
     return Response({
         "status": "success",
@@ -428,28 +437,4 @@ def create_customer_face(request: HttpRequest):
         "data": {
             "message": "Saved!"
         }
-    })
-
-
-@api_view(http_method_names=["GET"])
-@authentication_classes(authentication_classes=[TokenAuthentication])
-@permission_classes(permission_classes=[IsAuthenticated])
-def filter_faces_by_worker(request: HttpRequest, pk: int):
-    today = datetime.today()
-    day = request.GET.get("day")
-    month = request.GET.get("month")
-    year = request.GET.get("year")
-    worker = Worker.objects.get(pk=pk)
-    faces_obj = Face.objects.filter(worker=worker)
-    if day and month and year:
-        faces_obj = Face.objects.filter(worker=worker, created__day=day, created__month=month, created__year=year)
-    else:
-        faces_obj = Face.objects.filter(worker=worker, created__day=today.day, created__month=today.month, created__year=today.year)
-    faces = FaceModelSerializer(faces_obj, many=True)
-    return Response({
-        "status": "success",
-        "errors": {},
-        "data": {
-            "faces": faces.data
-        },
     })
