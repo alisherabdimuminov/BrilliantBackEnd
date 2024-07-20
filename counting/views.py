@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
-from .models import Model
-from .serializers import ModelSerializer
+from .models import Model, Face, Worker
+from .serializers import ModelSerializer, FaceModelSerializer, WorkerModelSerializer
 
 
 # Inputs
@@ -341,4 +341,99 @@ def get_statistics_by_date(request: HttpRequest):
         "data": {
             "statistics": statistics,
         }
+    })
+
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def get_faces(request: HttpRequest):
+    faces_obj = Face.objects.all()
+    faces = FaceModelSerializer(faces_obj, many=True)
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "faces": faces.data,
+        }
+    })
+
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def get_workers(request: HttpRequest):
+    workers_obj = Worker.objects.all()
+    workers = WorkerModelSerializer(workers_obj, many=True)
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "workers": workers.data
+        },
+    })
+
+
+@api_view(http_method_names=["POST"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def create_worker_face(request: HttpRequest):
+    uuid = request.data.get("uuid")
+    image = request.FILES.get("image")
+    worker = Worker.objects.filter(uuid=uuid)
+    if worker:
+        worker = worker.first()
+        face = Face.objects.create(
+            worker=worker,
+            type="worker",
+            image=image
+        )
+        return Response({
+            "status": "success",
+            "errors": {},
+            "data": {
+                "message": "Saved!"
+            }
+        })
+    else:
+        return Response({
+            "status": "error",
+            "errors": "Worker not found",
+            "data": {},
+        })
+    
+
+@api_view(http_method_names=["POST"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def create_customer_face(request: HttpRequest):
+    image = request.FILES.get("image")
+    face = Face.objects.create(
+        type="customer",
+        image=image
+    )
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "message": "Saved!"
+        }
+    })
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def filter_faces_by_worker(request: HttpRequest, pk: int):
+    worker = Worker.objects.get(pk=pk)
+    faces_obj = Face.objects.filter(worker=worker)
+    faces = FaceModelSerializer(faces_obj, many=True)
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "faces": faces.data
+        },
     })
