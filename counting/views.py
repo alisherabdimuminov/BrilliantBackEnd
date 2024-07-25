@@ -358,15 +358,15 @@ def get_faces(request: HttpRequest):
     if day and month and year:
         if worker:
             worker = Worker.objects.get(pk=worker)
-            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year, worker=worker)
+            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year, worker=worker).order_by("-id")
         else:
-            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year)
+            faces_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year).order_by("-id")
     else:
         if worker:
             worker = Worker.objects.get(pk=worker)
-            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, worker=worker)
+            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, worker=worker).order_by("-id")
         else:
-            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year)
+            faces_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year).order_by("-id")
     faces = FaceModelSerializer(faces_obj, many=True)
     return Response({
         "status": "success",
