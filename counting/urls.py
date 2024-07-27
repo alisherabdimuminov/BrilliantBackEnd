@@ -30,6 +30,7 @@ from .views import (
     get_workers,
     create_customer_face,
     create_worker_face,
+    get_workers_statistics_by_date,
 )
 
 
@@ -54,6 +55,7 @@ urlpatterns = [
 
     # statistics
     path("statistics/", get_statistics_by_date, name="statistics"),
+    path("statistics/workers/", get_workers_statistics_by_date, name="worker_statistics"),
 
     # workers
     path("faces/", get_faces, name="faces"),
