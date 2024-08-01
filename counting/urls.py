@@ -31,6 +31,9 @@ from .views import (
     create_customer_face,
     create_worker_face,
     get_workers_statistics_by_date,
+
+    get_customers_count,
+    get_workers_count,
 )
 
 
@@ -62,4 +65,7 @@ urlpatterns = [
     path("workers/", get_workers, name="workers"),
     path("faces/create/customer/", create_customer_face, name="create_customer_face"),
     path("faces/create/worker/", create_worker_face, name="create_worker_face"),
+
+    path("workers/count/", get_workers_count, name="workers_count"),
+    path("customers/count/", get_customers_count, name="customers_count"),
 ]

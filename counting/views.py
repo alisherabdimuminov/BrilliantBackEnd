@@ -471,3 +471,63 @@ def get_workers_statistics_by_date(request: HttpRequest):
             "statistics": statistics,
         }
     })
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def get_customers_count(request: HttpRequest):
+    today = datetime.today()
+    day = request.GET.get("day")
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+    customers_obj = None
+    if day and month and year:
+        customers_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year, type="customer")
+    else:
+        customers_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, type="customer")
+    if not customers_obj:
+        return Response({
+            "status": "error",
+            "errors": {
+                "model": "customers not found",
+            },
+            "data": {},
+        })
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "count": customers_obj.count()
+        }
+    })
+
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def get_workers_count(request: HttpRequest):
+    today = datetime.today()
+    day = request.GET.get("day")
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+    workers_obj = None
+    if day and month and year:
+        workers_obj = Face.objects.filter(created__day=day, created__month=month, created__year=year, type="worker")
+    else:
+        workers_obj = Face.objects.filter(created__day=today.day, created__month=today.month, created__year=today.year, type="worker")
+    if not workers_obj:
+        return Response({
+            "status": "error",
+            "errors": {
+                "model": "customers not found",
+            },
+            "data": {},
+        })
+    return Response({
+        "status": "success",
+        "errors": {},
+        "data": {
+            "count": workers_obj.count()
+        }
+    })
